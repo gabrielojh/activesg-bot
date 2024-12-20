@@ -7,3 +7,30 @@ services:
       - 27017:27017
     volumes:
       - ./data:/data/db
+
+  react-frontend:
+    container_name: react-frontend
+    image: react-frontend:latest
+    build:
+      context: ./react-frontend
+      dockerfile: Dockerfile
+    ports:
+      - 5173:5173
+    restart: always
+    volumes:
+      - ./react-frontend:/app
+      - /app/node_modules
+    
+  python-backend:
+    container_name: python-backend
+    image: python-backend:latest
+    build:
+      context: ./python-backend
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    restart: always
+    volumes:
+      - ./python-backend:/app
+    depends_on:
+      - mongodb

@@ -1,11 +1,19 @@
 import React, { useState } from "react";
-import { Button, CircularProgress, Typography } from "@mui/material";
+import {
+  Alert,
+  Button,
+  CircularProgress,
+  Snackbar,
+  Typography,
+} from "@mui/material";
 import { uploadFile } from "../api/fileUploadApi";
 import { CloudUpload } from "@mui/icons-material";
 
 const FileUploadButton: React.FC = () => {
   const [uploading, setUploading] = useState(false);
-  const [uploadSuccess, setUploadSuccess] = useState<boolean | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState<boolean | undefined>(
+    undefined
+  );
 
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -24,7 +32,12 @@ const FileUploadButton: React.FC = () => {
       setUploadSuccess(false);
     } finally {
       setUploading(false);
+      event.target.value = "";
     }
+  };
+
+  const handleClose = () => {
+    setUploadSuccess(undefined);
   };
 
   return (
@@ -46,13 +59,26 @@ const FileUploadButton: React.FC = () => {
           Upload CSV
         </Button>
       </label>
-      {uploading && <CircularProgress size={24} />}
-      {uploadSuccess === true && (
-        <Typography color="success">Upload Successful</Typography>
-      )}
-      {uploadSuccess === false && (
-        <Typography color="error">Upload Failed</Typography>
-      )}
+      <Snackbar
+        autoHideDuration={5000}
+        open={uploadSuccess}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert severity="success" variant="filled">
+          File uploaded successfully!
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        autoHideDuration={5000}
+        open={uploadSuccess === false}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert severity="error" variant="filled">
+          File upload failed!
+        </Alert>
+      </Snackbar>
     </>
   );
 };
