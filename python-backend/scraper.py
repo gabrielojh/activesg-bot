@@ -8,10 +8,11 @@ from selenium.webdriver.common.action_chains import ActionChains
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import csv
+import os
 
 data = []
 
-def main():
+def scraper():
     # Open ActiveSG booking website
     url = "https://activesg.gov.sg/activities/list"
 
@@ -68,10 +69,8 @@ def main():
                     data.append([venue_name, date, time_slot])
 
     # Save data to CSV
-    save_to_csv("activesg_badminton.csv", data)
+    save_to_csv("activesg_badminton.csv", data, "../output")
 
-    # Quit after input
-    input("Press Enter to quit...")
     browser.quit()
 
 
@@ -148,11 +147,17 @@ def parse_dates(browser):
     return timeslot_data
 
 
-def save_to_csv(file_name, data):
+def save_to_csv(file_name, data, directory = None):
+    # Check if directory exists
+    if directory:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        file_name = os.path.join(directory, file_name)
+    
     with open(file_name, "w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(["Venue", "Date", "Timeslot"])
         writer.writerows(data)
     print(f"Data saved to {file_name}")
 
-main()
+# scraper()
