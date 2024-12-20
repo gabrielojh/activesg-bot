@@ -10,19 +10,9 @@ import {
 import CloudUpload from "@mui/icons-material/CloudUpload";
 import SportsTennisOutlinedIcon from "@mui/icons-material/SportsTennisOutlined";
 import ColourButton from "../ColourButton";
-import { useState } from "react";
+import FileUploadButton from "./FileUploadButton";
 
 const Navbar = () => {
-  
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
-  const handleFileChange = (event : React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-    }
-    console.log("Selected file:", file);
-  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -41,23 +31,7 @@ const Navbar = () => {
             Badminton Venues
           </Typography>
           <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-            <input
-              accept=".csv" 
-              id="file-upload"
-              type="file"
-              style={{ display: "none" }}
-              onChange={handleFileChange}
-            />
-            <label htmlFor="file-upload">
-              <Button
-                variant="contained"
-                color="primary"
-                component="span"
-                startIcon={<CloudUpload />}
-              >
-                Upload CSV
-              </Button>
-            </label>
+            <FileUploadButton />
             <ColourButton />
           </Box>
         </Toolbar>
