@@ -1,5 +1,9 @@
 import { Autocomplete, Box, Chip, debounce, TextField } from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import {
+  DatePicker,
+  LocalizationProvider,
+  TimePicker,
+} from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useCallback, useEffect, useState } from "react";
 import dayjs from "dayjs";
@@ -15,7 +19,31 @@ const SearchForm = ({ setVenues }: SearchFormProps) => {
   const [searchCriteria, setSearchCriteria] = useState<SearchCriteria>({
     venue: [],
     date: undefined,
+    startTime: undefined,
+    endTime: undefined,
   });
+  const [startTime, setStartTime] = useState<dayjs.Dayjs | null>(null);
+  const [endTime, setEndTime] = useState<dayjs.Dayjs | null>(null);
+
+  const handleStartTimeChange = (time: dayjs.Dayjs | null) => {
+    // Ensure start time is before the end time
+    if (endTime && time && time.isAfter(endTime)) {
+      alert("Start time cannot be after end time");
+      return;
+    }
+    setStartTime(time);
+    setSearchCriteria({ ...searchCriteria, startTime: time?.format("HH:mm:ss") });
+  };
+
+  const handleEndTimeChange = (time: dayjs.Dayjs | null) => {
+    // Ensure end time is after the start time
+    if (startTime && time && time.isBefore(startTime)) {
+      alert("End time cannot be before start time");
+      return;
+    }
+    setEndTime(time);
+    setSearchCriteria({ ...searchCriteria, endTime: time?.format("HH:mm:ss") });
+  };
 
   const handleDateChange = (date: dayjs.Dayjs | null) => {
     setSearchCriteria({ ...searchCriteria, date: date?.format("YYYY-MM-DD") });
@@ -43,35 +71,51 @@ const SearchForm = ({ setVenues }: SearchFormProps) => {
 
   return (
     <Box sx={{ display: "flex", gap: 2 }}>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker
-          label="Enter Desired Dates (Optional)"
-          onChange={handleDateChange}
-          sx={{ flex: 1 }}
-        />
-      </LocalizationProvider>
-      <Autocomplete
-        multiple
-        options={venue_list.map((option) => option.venue)}
-        freeSolo
-        onChange={handleVenuesChange}
-        renderTags={(value: readonly string[], getTagProps) =>
-          value.map((option: string, index: number) => {
-            const { key, ...tagProps } = getTagProps({ index });
-            return (
-              <Chip variant="filled" label={option} key={key} {...tagProps} />
-            );
-          })
-        }
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Enter Venues"
-            placeholder="Badminton Venues"
+      <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            label="Enter Desired Dates (Optional)"
+            onChange={handleDateChange}
+            sx={{ flex: 1 }}
           />
-        )}
-        sx={{ flex: 2 }}
-      />
+          <Box sx={{ display: "flex", marginTop: 2, gap: 2 }}>
+            <TimePicker
+              label="Start (Optional)"
+              value={startTime}
+              onChange={handleStartTimeChange}
+            />
+            <TimePicker
+              label="End (Optional)"
+              value={endTime}
+              onChange={handleEndTimeChange}
+            />
+          </Box>
+        </LocalizationProvider>
+      </Box>
+      <Box sx={{ display: "flex", flex: 2 }}>
+        <Autocomplete
+          multiple
+          options={venue_list.map((option) => option.venue)}
+          freeSolo
+          onChange={handleVenuesChange}
+          renderTags={(value: readonly string[], getTagProps) =>
+            value.map((option: string, index: number) => {
+              const { key, ...tagProps } = getTagProps({ index });
+              return (
+                <Chip variant="filled" label={option} key={key} {...tagProps} />
+              );
+            })
+          }
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Enter Venues (Optional)"
+              placeholder="Badminton Venues"
+            />
+          )}
+          sx={{ flex: 2 }}
+        />
+      </Box>
     </Box>
   );
 };

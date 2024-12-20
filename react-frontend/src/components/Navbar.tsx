@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import CloudUpload from "@mui/icons-material/CloudUpload";
 import SportsTennisOutlinedIcon from "@mui/icons-material/SportsTennisOutlined";
-import ColourButton from "../ColourButton";
+import ColourButton from "./ColourButton";
 import FileUploadButton from "./FileUploadButton";
 
 const Navbar = () => {
