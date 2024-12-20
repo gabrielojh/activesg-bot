@@ -69,7 +69,7 @@ def scraper():
                     data.append([venue_name, date, time_slot])
 
     # Save data to CSV
-    save_to_csv("activesg_badminton.csv", data, "../output")
+    save_to_csv("activesg_badminton.csv", data, "./output")
 
     browser.quit()
 
