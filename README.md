@@ -24,8 +24,8 @@ This project consists of a Python-based scraper and a Flask API that automates t
 #### Cloning the Repository:
 
 ```sh
-    git clone git@github.com:gabrielojh/activesg-bot.git
-    cd activesg-bot
+git clone git@github.com:gabrielojh/activesg-bot.git
+cd activesg-bot
 ```
 
 #### Scraper Standalone
@@ -56,6 +56,3 @@ docker-compose up --build
 The API will be available at `http://localhost:8080/`
 
 The Website will be available at `http://localhost:5173/`
-
-
-
