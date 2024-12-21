@@ -21,7 +21,7 @@ This project consists of a Python-based scraper and a Flask API that automates t
 
 ### Getting Started
 
-#### Cloning the Repository:
+#### Cloning the Repository
 
 ```sh
 git clone git@github.com:gabrielojh/activesg-bot.git
@@ -48,7 +48,7 @@ python scraper.py
 ```
 
 #### Fullstack
-Running the fullstack application is simply, just use the provided docker compose file
+Running the fullstack application is simple, just use the provided docker compose file
 ```sh
 # Ensure that you are in the root directory
 docker-compose up --build
@@ -56,3 +56,5 @@ docker-compose up --build
 The API will be available at `http://localhost:8080/`
 
 The Website will be available at `http://localhost:5173/`
+
+

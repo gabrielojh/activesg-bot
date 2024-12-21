@@ -6,23 +6,40 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.action_chains import ActionChains
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium_stealth import stealth
 import time
+import os
 import csv
 
 data = []
 
+
 def scraper():
+    """
+    Scrapes the ActiveSG website for available badminton venue timeslots and saves the data to a CSV file.
+    """
+
     # Open ActiveSG booking website
     url = "https://activesg.gov.sg/activities/list"
 
     # Setup Chrome WebDriver with options
+    # TODO: Add an additonal fix to run in headless mode
     options = webdriver.ChromeOptions()
-    # options.add_argument("--headless")  # Run Chrome in headless mode
-    # options.add_argument("--disable-gpu")  # Disable GPU acceleration
-    # options.add_argument("--window-size=1920,1080")  # Set window size to avoid issues with elements not being in view
+    # options.add_argument("--window-size=1920,1080")
+    # options.add_argument("--start-maximized")
+    # options.add_argument("--headless=new")
 
     service = ChromeService(executable_path=ChromeDriverManager().install())
     browser = webdriver.Chrome(service=service, options=options)
+
+    # # Initlialize the browsing context with selenium stealth (Bypass Cloudflare detection)
+    # stealth(browser,
+    #     languages=["en-US", "en"],
+    #     vendor="Google Inc.",
+    #     platform="Win32",
+    #     webgl_vendor="Intel Inc.",
+    #     renderer="Intel Iris OpenGL Engine",
+    #     fix_hairline=True)
 
     browser.get(url)
 
@@ -48,12 +65,19 @@ def scraper():
         EC.presence_of_element_located((By.CSS_SELECTOR, "div.chakra-stack a"))
     )
 
-    # Badminton Venues Page
+    #########################
+    # Badminton Venues Page #
+    #########################
+
     links = [
         link
         for link in browser.find_elements(By.CSS_SELECTOR, "div.chakra-stack a")
         if "venues" in link.get_attribute("href")
     ]
+
+    ##########################
+    # Process each venue link #
+    ##########################
 
     for link in links:
         # print(link.get_attribute("href"))
@@ -70,12 +94,23 @@ def scraper():
     # Save data to CSV
     save_to_csv("output/activesg_badminton.csv", data)
 
-    # Quit after input
-    input("Press Enter to quit...")
+    # # Quit after input
+    # input("Press Enter to quit...")
     browser.quit()
 
 
 def process_link(browser, link_url):
+    """
+    Processes a venue link to check availability and parse available timeslots.
+
+    Args:
+        browser (webdriver.Chrome): The Selenium WebDriver instance.
+        link_url (str): The URL of the venue link to process.
+
+    Returns:
+        dict: A dictionary containing dates and their corresponding available timeslots.
+    """
+
     # Open the link in a new tab
     browser.execute_script("window.open(arguments[0]);", link_url)
     browser.switch_to.window(browser.window_handles[-1])
@@ -114,6 +149,16 @@ def process_link(browser, link_url):
 
 
 def parse_dates(browser):
+    """
+    Parses available timeslots for each date on the venue page.
+
+    Args:
+        browser (webdriver.Chrome): The Selenium WebDriver instance.
+
+    Returns:
+        dict: A dictionary containing dates and their corresponding available timeslots.
+    """
+
     timeslot_data = {}
     # Find all date buttons based on the "aria-label" attribute
     date_buttons = browser.find_elements(
@@ -123,7 +168,9 @@ def parse_dates(browser):
     # Iterate through all the date buttons
     for button in date_buttons:
         # Get the date from the aria-label
-        date = button.get_attribute("aria-label").split("for ")[-1]  # Extract the date portion
+        date = button.get_attribute("aria-label").split("for ")[
+            -1
+        ]  # Extract the date portion
 
         # Scroll into view and click the button
         browser.execute_script("arguments[0].scrollIntoView(true);", button)
@@ -148,17 +195,27 @@ def parse_dates(browser):
     return timeslot_data
 
 
-def save_to_csv(file_name, data, directory = None):
+def save_to_csv(file_name, data, directory=None):
+    """
+    Saves the scraped data to a CSV file.
+
+    Args:
+        file_name (str): The name of the CSV file.
+        data (list): The data to save.
+        directory (str, optional): The directory to save the file in. Defaults to None.
+    """
+
     # Check if directory exists
     if directory:
         if not os.path.exists(directory):
             os.makedirs(directory)
         file_name = os.path.join(directory, file_name)
-    
+
     with open(file_name, "w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(["Venue", "Date", "Timeslot"])
         writer.writerows(data)
     print(f"Data saved to {file_name}")
+
 
 scraper()
