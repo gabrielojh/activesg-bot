@@ -163,8 +163,6 @@ The ActiveSG Badminton API allows users to scrape venue availability data from t
 
 ---
 
-## **Using the Frontend**
-
 The frontend allows users to view, filter, and interact with the scraped badminton venue data, which is stored in the MongoDB collection. The following sections describe the main features and functionality of the interface.
 
 ---
