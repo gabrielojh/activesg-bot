@@ -161,8 +161,6 @@ The ActiveSG Badminton API allows users to scrape venue availability data from t
 
 ![Website Example](assets/frontend.png)
 
-Here's a detailed explanation on how to use the frontend of your application:
-
 ---
 
 ## **Using the Frontend**
